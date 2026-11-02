@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Лабораторні роботи №1 і №2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <p class="course">Лабораторні роботи №1 і №2</p>
+      <h1>Криптографія і автентифікація</h1>
+      <p class="lead">Виконала Титар Ангеліна</p>
+    </div>
+
+    <nav class="lab-switch" aria-label="Лабораторні роботи">
+      <a class="lab-link" href="#lab1" data-lab="lab1">
+        <span class="lab-num">№1</span>
+        <span class="lab-name">Класичні шифри</span>
+        <span class="lab-desc">Цезар, Віженер, перестановка, частотний аналіз</span>
+      </a>
+      <a class="lab-link" href="#lab2" data-lab="lab2">
+        <span class="lab-num">№2</span>
+        <span class="lab-name">Авторизація і JWT</span>
+        <span class="lab-desc">SHA256, JSON Web Token, захищений шлях</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- ===================== ЛАБОРАТОРНА №1 ===================== -->
+  <section class="lab" id="lab1">
+    <div class="lab-head">
+      <h2 class="lab-title">Лабораторна робота №1</h2>
+      <p class="lab-topic">Шифр Цезаря. Шифр перестановки. Додатково шифр Віженера і діаграми частот літер.</p>
+      <nav class="tabs" role="tablist" aria-label="Шифри">
+        <button class="tab active" data-tab="caesar" role="tab">Цезар</button>
+        <button class="tab" data-tab="vigenere" role="tab">Віженер</button>
+        <button class="tab" data-tab="perm" role="tab">Перестановка</button>
+        <button class="tab" data-tab="crack" role="tab">Частотний аналіз</button>
+      </nav>
+    </div>
+
+    <div class="lab-body">
+      <!-- ===== ШИФР ЦЕЗАРЯ ===== -->
+      <section class="panel active" id="caesar">
+        <div class="card">
+          <div class="card-head">
+            <h2>Шифр Цезаря</h2>
+            <p class="hint">Кожна літера зсувається на K позицій в алфавіті. Пробіли і розділові знаки не змінюються.</p>
+          </div>
+
+          <div class="controls">
+            <label class="field">
+              <span>Алфавіт</span>
+              <select id="caesar-lang">
+                <option value="ua">Український, 33 літери</option>
+                <option value="en">Англійський, 26 літер</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Ключ K = <b id="caesar-key-val">5</b></span>
+              <input type="range" id="caesar-key" min="1" max="32" value="5">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Текст</span>
+            <textarea id="caesar-input" rows="4">Криптографія вивчає способи захисту інформації від сторонніх людей. Ще в Стародавньому Римі Юлій Цезар зсував кожну літеру своїх листів на три позиції, щоб гонець не зміг прочитати наказ.</textarea>
+          </label>
+
+          <div class="buttons">
+            <button class="btn btn-primary" id="caesar-enc">Зашифрувати</button>
+            <button class="btn btn-secondary" id="caesar-dec">Розшифрувати</button>
+            <button class="btn btn-text" id="caesar-swap">Підставити результат у текст</button>
+          </div>
+
+          <div class="field">
+            <span>Результат</span>
+            <output class="result" id="caesar-output"></output>
+          </div>
+
+          <div class="alphabet" id="caesar-alphabet"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Частоти літер</h2>
+            <p class="hint">Анімація бере символи вхідного тексту і результату по одному та додає їх до діаграми.</p>
+          </div>
+          <div class="chart-head">
+            <button class="btn btn-small" id="caesar-play">Відтворити появу символів</button>
+            <span class="live-char" id="caesar-live"></span>
+          </div>
+          <div class="chart" id="caesar-chart"></div>
+          <div class="legend">
+            <span><i class="dot dot-in"></i>Вхідний текст</span>
+            <span><i class="dot dot-out"></i>Результат</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ШИФР ВІЖЕНЕРА ===== -->
+      <section class="panel" id="vigenere">
+        <div class="card">
+          <div class="card-head">
+            <h2>Шифр Віженера</h2>
+            <p class="hint">Ключове слово повторюється вздовж тексту. Кожна літера зсувається на номер відповідної літери ключа, тому одна й та сама літера тексту може перейти в різні літери шифротексту.</p>
+          </div>
+
+          <div class="controls">
+            <label class="field">
+              <span>Алфавіт</span>
+              <select id="vig-lang">
+                <option value="ua">Український, 33 літери</option>
+                <option value="en">Англійський, 26 літер</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Ключове слово</span>
+              <input type="text" id="vig-key" value="КЛЮЧ">
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Текст</span>
+            <textarea id="vig-input" rows="4">Криптографія вивчає способи захисту інформації від сторонніх людей. Ще в Стародавньому Римі Юлій Цезар зсував кожну літеру своїх листів на три позиції, щоб гонець не зміг прочитати наказ.</textarea>
+          </label>
+
+          <div class="buttons">
+            <button class="btn btn-primary" id="vig-enc">Зашифрувати</button>
+            <button class="btn btn-secondary" id="vig-dec">Розшифрувати</button>
+            <button class="btn btn-text" id="vig-swap">Підставити результат у текст</button>
+          </div>
+
+          <div class="field">
+            <span>Результат</span>
+            <output class="result" id="vig-output"></output>
+          </div>
+
+          <h3>Перші літери тексту і ключа</h3>
+          <div class="table-wrap"><table class="grid steps" id="vig-table"></table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Частоти літер</h2>
+            <p class="hint">Шифр Віженера вирівнює діаграму. Індекс збігу показує, наскільки розподіл схожий на природну мову (≈ 0,055) чи на випадковий текст (1 / n).</p>
+          </div>
+          <div class="stats" id="vig-stats"></div>
+          <div class="chart-head">
+            <button class="btn btn-small" id="vig-play">Відтворити появу символів</button>
+            <span class="live-char" id="vig-live"></span>
+          </div>
+          <div class="chart" id="vig-chart"></div>
+          <div class="legend">
+            <span><i class="dot dot-in"></i>Вхідний текст</span>
+            <span><i class="dot dot-out"></i>Результат</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ШИФР ПЕРЕСТАНОВКИ ===== -->
+      <section class="panel" id="perm">
+        <div class="card">
+          <div class="card-head">
+            <h2>Шифр перестановки</h2>
+            <p class="hint">Текст записується в таблицю по рядках, а читається по стовпцях у порядку літер ключа.</p>
+          </div>
+
+          <div class="controls">
+            <label class="field">
+              <span>Ключове слово</span>
+              <input type="text" id="perm-key" value="Шифр">
+            </label>
+            <label class="field">
+              <span>Заповнювач порожніх клітинок</span>
+              <select id="perm-pad">
+                <option value="">Без заповнювача</option>
+                <option value=" ">Пробіл</option>
+                <option value="*">Зірочка *</option>
+              </select>
+            </label>
+          </div>
+
+          <label class="field">
+            <span>Текст</span>
+            <textarea id="perm-input" rows="3">Титар Ангеліна</textarea>
+          </label>
+
+          <div class="buttons">
+            <button class="btn btn-primary" id="perm-enc">Зашифрувати</button>
+            <button class="btn btn-secondary" id="perm-dec">Розшифрувати</button>
+            <button class="btn btn-text" id="perm-swap">Підставити результат у текст</button>
+          </div>
+
+          <div class="field">
+            <span>Результат</span>
+            <output class="result" id="perm-output"></output>
+          </div>
+
+          <h3>Таблиця перестановки</h3>
+          <div class="table-wrap"><table class="grid" id="perm-table"></table></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Частоти літер</h2>
+            <p class="hint">Шифр перестановки лише змінює порядок літер, тому обидві діаграми збігаються.</p>
+          </div>
+          <div class="chart-head">
+            <button class="btn btn-small" id="perm-play">Відтворити появу символів</button>
+            <span class="live-char" id="perm-live"></span>
+          </div>
+          <div class="chart" id="perm-chart"></div>
+          <div class="legend">
+            <span><i class="dot dot-in"></i>Вхідний текст</span>
+            <span><i class="dot dot-out"></i>Результат</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== ЧАСТОТНИЙ АНАЛІЗ ===== -->
+      <section class="panel" id="crack">
+        <div class="card">
+          <div class="card-head">
+            <h2>Злам шифру Цезаря</h2>
+            <p class="hint">Програма шукає найчастішу літеру шифротексту і припускає, що вона відповідає найчастішій літері мови («О» для української, «E» для англійської). Потім вона перевіряє всі ключі за критерієм χ² і вибирає той, після якого текст найбільше схожий на природну мову.</p>
+          </div>
+
+          <label class="field">
+            <span>Алфавіт</span>
+            <select id="crack-lang">
+              <option value="ua">Український</option>
+              <option value="en">Англійський</option>
+            </select>
+          </label>
+
+          <label class="field">
+            <span>Шифротекст</span>
+            <textarea id="crack-input" rows="4">Пхлфчужхдщмґ єлєядї цфуцуел кдьлцчш мтщухсдюмн єми цчухуттмь ргиіо. Бі є Цчдхуидєтвусш Хлсм Грмо Юікдх кцшєдє пуйтш рмчіхш цєунь рлцчмє тд чхл фуклюмн, буе жутіюв ті ксмж фхуялчдчл тдпдк.</textarea>
+          </label>
+
+          <div class="buttons">
+            <button class="btn btn-primary" id="crack-run">Знайти ключ</button>
+          </div>
+
+          <div class="crack-result" id="crack-result"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Частоти шифротексту і мови</h2>
+            <p class="hint">Перша серія показує частоти літер шифротексту, друга показує еталонні частоти мови з таблиці 1.3.</p>
+          </div>
+          <div class="chart" id="crack-chart"></div>
+          <div class="legend">
+            <span><i class="dot dot-in"></i>Шифротекст</span>
+            <span><i class="dot dot-out"></i>Мова</span>
+          </div>
+          <h3>П’ять найкращих ключів за χ²</h3>
+          <div class="table-wrap"><table class="grid candidates" id="crack-table"></table></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- ===================== ЛАБОРАТОРНА №2 ===================== -->
+  <section class="lab" id="lab2" hidden>
+    <div class="lab-head">
+      <h2 class="lab-title">Лабораторна робота №2</h2>
+      <p class="lab-topic">Автентифікація з використанням сторонніх сервісів. JSON вебтокени.</p>
+      <ol class="auth-steps">
+        <li id="step-1">Вхід</li>
+        <li id="step-2">Токен</li>
+        <li id="step-3">Захищений шлях</li>
+      </ol>
+    </div>
+
+    <div class="lab-body lab2-grid">
+      <!-- ===== 1. Вхід ===== -->
+      <section class="card" id="login-card">
+        <div class="card-head">
+          <h2>Вхід за логіном і паролем</h2>
+          <p class="hint">Логін дорівнює прізвищу, пароль дорівнює імені. Сервер порівнює SHA256-хеш введеного пароля з хешем у базі.</p>
+        </div>
+
+        <div class="controls">
+          <label class="field">
+            <span>Логін</span>
+            <input type="text" id="login" value="Tytar" autocomplete="username">
+          </label>
+          <label class="field">
+            <span>Пароль</span>
+            <input type="password" id="password" value="Anhelina" autocomplete="current-password">
+          </label>
+        </div>
+
+        <p class="hash-line">SHA256 пароля: <code id="hash-preview">…</code></p>
+
+        <div class="buttons">
+          <button class="btn btn-primary" id="btn-login">Увійти</button>
+          <a class="btn btn-secondary" href="/login" target="_blank">Відкрити /login у браузері</a>
+        </div>
+
+        <div class="answer" id="login-answer"></div>
+      </section>
+
+      <!-- ===== База ===== -->
+      <section class="card" id="db-card">
+        <div class="card-head">
+          <h2>База користувачів</h2>
+          <p class="hint">Сервер зберігає лише SHA256-хеші паролів, без солі.</p>
+        </div>
+        <div class="table-wrap"><table class="db" id="db-table"></table></div>
+      </section>
+
+      <!-- ===== 2. Токен ===== -->
+      <section class="card" id="token-card">
+        <div class="card-head">
+          <h2>JWT-токен</h2>
+          <p class="hint">Токен містить логін та id користувача і підписаний алгоритмом HS256. Кольори позначають три частини токена.</p>
+        </div>
+
+        <div class="buttons">
+          <button class="btn btn-primary" id="btn-token">Отримати токен</button>
+          <button class="btn btn-secondary" id="btn-copy" disabled>Скопіювати</button>
+          <a class="btn btn-text" href="https://jwt.io/" target="_blank" rel="noopener">Перевірити на jwt.io</a>
+        </div>
+
+        <div class="token-box" id="token-box">Натисни «Отримати токен», щоб сервер видав JWT.</div>
+
+        <div class="timer" id="timer" hidden>
+          <span>Токен дійсний ще</span>
+          <b id="timer-value">--:--</b>
+          <div class="timer-bar"><div id="timer-fill"></div></div>
+        </div>
+
+        <div class="parts">
+          <div class="part part-header">
+            <h3>Header</h3>
+            <pre id="part-header">{}</pre>
+          </div>
+          <div class="part part-payload">
+            <h3>Payload</h3>
+            <pre id="part-payload">{}</pre>
+          </div>
+          <div class="part part-signature">
+            <h3>Signature</h3>
+            <pre>HMACSHA256(
+    base64UrlEncode(header) + "." +
+    base64UrlEncode(payload),
+    secret)</pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 3. Захищений шлях ===== -->
+      <section class="card" id="protected-card">
+        <div class="card-head">
+          <h2>Захищений шлях /protected</h2>
+          <p class="hint">Запит надсилає заголовок <code>Authorization: Bearer &lt;token&gt;</code>. Зміни хоча б один символ токена, і сервер відповість кодом 403.</p>
+        </div>
+
+        <label class="field">
+          <span>Bearer token</span>
+          <textarea id="bearer" rows="3" placeholder="Спершу отримай токен"></textarea>
+        </label>
+
+        <div class="buttons">
+          <button class="btn btn-primary" id="btn-protected">Відкрити /protected</button>
+          <button class="btn btn-secondary" id="btn-noauth">Запит без токена</button>
+          <a class="btn btn-text" href="/protected" target="_blank">Відкрити /protected у новій вкладці</a>
+        </div>
+
+        <div class="answer" id="protected-answer"></div>
+      </section>
+
+      <!-- ===== Postman ===== -->
+      <section class="card" id="postman-card">
+        <div class="card-head">
+          <h2>Перевірка в Postman</h2>
+        </div>
+        <ol class="postman">
+          <li><b>GET /login</b>, вкладка Authorization, тип Basic Auth, логін і пароль.</li>
+          <li><b>POST /token</b>, вкладка Body, формат raw JSON: <code>{"login":"Tytar","password":"Anhelina"}</code></li>
+          <li><b>GET /protected</b>, вкладка Authorization, тип Bearer Token, токен з попереднього кроку.</li>
+        </ol>
+      </section>
+    </div>
+  </section>
+
+  <footer class="footer">Лабораторні роботи №1 і №2, Титар Ангеліна, 2026</footer>
+
+  <script src="js/app.js"></script>
+  <script src="js/lab1.js"></script>
+  <script src="js/lab2.js"></script>
+</body>
+</html>

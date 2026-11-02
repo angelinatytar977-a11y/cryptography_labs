@@ -1,0 +1,14 @@
+{
+  "name": "labs-1-2",
+  "version": "1.0.0",
+  "description": "Лабораторні роботи 1 і 2. Класичні шифри, авторизація і JWT",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "hash": "node hash-passwords.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2"
+  }
+}

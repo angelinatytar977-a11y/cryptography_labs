@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Захищений шлях /protected</title>
+  <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="success-page">
+  <div class="card protected-page">
+    <p class="course">Лабораторна робота №2</p>
+    <h1>Захищений шлях</h1>
+    <p class="hint">Сторінка надсилає запит <code>GET /protected</code> із заголовком <code>Authorization: Bearer</code> і токеном, який ти отримала на головній сторінці.</p>
+
+    <div class="answer" id="answer"></div>
+
+    <label class="field">
+      <span>Bearer token</span>
+      <textarea id="bearer" rows="4" placeholder="Встав токен або отримай його на головній сторінці"></textarea>
+    </label>
+
+    <div class="buttons">
+      <button class="btn btn-primary" id="send">Надіслати запит</button>
+      <a class="btn btn-secondary" href="/#lab2">Повернутися на головну</a>
+    </div>
+  </div>
+
+  <script>
+    const answer = document.getElementById("answer");
+    const bearer = document.getElementById("bearer");
+
+    async function load() {
+      const token = bearer.value.trim();
+      if (!token) {
+        answer.className = "answer err";
+        answer.textContent = "Токена немає. Отримай його на головній сторінці в лабораторній №2 кнопкою «Отримати токен» або встав вручну.";
+        return;
+      }
+      const res = await fetch("/protected", { headers: { Authorization: "Bearer " + token } });
+      const data = await res.json();
+      answer.className = "answer " + (res.ok ? "ok" : "err");
+      answer.innerHTML = `<span class="status">HTTP ${res.status}</span>\n` + JSON.stringify(data, null, 2);
+    }
+
+    try { bearer.value = localStorage.getItem("lab2-token") || ""; } catch {}
+    document.getElementById("send").addEventListener("click", load);
+    load();
+  </script>
+</body>
+</html>
